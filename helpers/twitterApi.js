@@ -1,13 +1,14 @@
-//https://dev.twitter.com/oauth/application-only
-//https://dev.twitter.com/oauth/overview/application-owner-access-tokens
-//https://dev.twitter.com/oauth/overview
+// https://dev.twitter.com/oauth/application-only
+// https://dev.twitter.com/oauth/overview/application-owner-access-tokens
+// https://dev.twitter.com/oauth/overview
 var Twitter = require('twitter');
 var request = require('request');
 var Promise = require('bluebird');
+var config = require('../config.js')
 
-//USE TO GET THE BEARER TOKEN
-// var key = config.consumerKey;
-// var secret = config.consumerSecret;
+// // USE TO GET THE BEARER TOKEN
+// var key = config.twitterKey.consumerKey;
+// var secret = config.twitterKey.consumerSecret;
 // var cat = key + ":" + secret;
 // var credentials = new Buffer(cat).toString('base64');
 
@@ -29,11 +30,11 @@ var Promise = require('bluebird');
 const MAX_TWEETS = 200;
 const MAX_FRIENDS = 200;
 
-var consumerKey = process.env.twitterConsumerKey || require('../config.js').twitterKey.consumerKey;
-var consumerSecret = process.env.twitterConsumerSecret || require('../config.js').twitterKey.consumerSecret;
-//var bearerToken = process.env.twitterBearerToken || require('../config.js').twitterKey.bearerToken;
-var accessTokenKey = process.env.twitterAccessTokenKey || require('../config.js').twitterKey.accessTokenKey;
-var accessTokenSecret = process.env.twitterAccessTokenSecret || require('../config.js').twitterKey.accessTokenSecret;
+var consumerKey = process.env.twitterConsumerKey || config.twitterKey.consumerKey;
+var consumerSecret = process.env.twitterConsumerSecret || config.twitterKey.consumerSecret;
+//var bearerToken = process.env.twitterBearerToken || config.twitterKey.bearerToken;
+var accessTokenKey = process.env.twitterAccessTokenKey || config.twitterKey.accessTokenKey;
+var accessTokenSecret = process.env.twitterAccessTokenSecret || config.twitterKey.accessTokenSecret;
 
 var client = new Twitter({
   // WARNING Twitter library want snake case!
@@ -100,6 +101,7 @@ var getTweets = function(screenName, callback) {
     var params = { screen_name: screenName, count: MAX_TWEETS, exclude_replies: true };
     client.get('statuses/user_timeline', params, function(error, tweets, response) {
       if (error) {
+        console.log(error);
         reject(error);
       } else if (tweets.length === 0) {
         reject('No tweets found. Unknown screen name.');  
