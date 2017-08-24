@@ -28,7 +28,7 @@ var config = require('../config.js')
 
 // });
 const MAX_TWEETS = 200;
-const MAX_FRIENDS = 200;
+const MAX_FRIENDS = 2;
 
 var consumerKey = process.env.twitterConsumerKey || config.twitterKey.consumerKey;
 var consumerSecret = process.env.twitterConsumerSecret || config.twitterKey.consumerSecret;
