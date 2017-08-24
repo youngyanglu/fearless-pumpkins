@@ -14,14 +14,22 @@ db.once('open', function() {
   console.log('mongoose connected successfully');
 });
 
-var trainingSchema = mongoose.Schema({
+var trainingSchema = new mongoose.Schema({
   Category: String, // e.g. politics
   Classification: Number, // 0 for democrat, 1 for republican
-  Text: String, // the tweet's text, uncleaned
+  Text: String, // the tweet text, uncleaned
   Handle: String // who wrote this tweet, in case useful later
 });
 
+var cacheSchema = new mongoose.Schema({
+	Handle: String,
+	Classification: Number,
+	Probability: Number,
+	Count: {type: Number, default: 0}
+});
+
 var Training = mongoose.model('training', trainingSchema);
+var Cache = mongoose.model('cache', cacheSchema);
 
 module.exports.addTweet = (Text, Category, Classification, Handle) => {
 	Training.create({Text}, (err, tweet) => {
@@ -35,6 +43,35 @@ module.exports.addTweet = (Text, Category, Classification, Handle) => {
 				console.log(updatedTweet);
 			});
 		}
+	});
+};
+
+module.exports.findHandle = (Handle, callback) => {
+	Cache.find({Handle}, (err, handle) => {
+		callback(err, handle);
+	});
+};
+
+module.exports.addHandle = (Handle, Classification, callback) => {
+	Cache.create({Handle}, (err, handle) => {
+		if (err) {
+			throw err;
+		} else {
+			handle.Classification = Classification;
+			handle.Probability = Probability;
+			handle.save((err, updatedHandle) => {
+				callback(updatedHandle);
+			});
+		}
+	});
+};
+
+module.exports.increaseCount = (Handle, callback) => {
+	Cache.find({Handle}, (err, handle) => {
+		handle.count++;
+		handle.save((err, updatedHandle) => {
+			callback(updatedHandle);
+		});
 	});
 };
 
