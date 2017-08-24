@@ -1,4 +1,5 @@
-var Python = require("python-runner");
+const Python = require("python-runner");
+
 Python.execScript(
 	__dirname + "/mlPredictor.py",
 	{
@@ -9,3 +10,4 @@ Python.execScript(
 .then(function(data){
     console.log(data);
 });
+

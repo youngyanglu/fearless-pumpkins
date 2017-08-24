@@ -31,7 +31,7 @@ var cacheSchema = new mongoose.Schema({
 var Training = mongoose.model('training', trainingSchema);
 var Cache = mongoose.model('cache', cacheSchema);
 
-module.exports.addTweet = (Text, Category, Classification, Handle) => {
+module.exports.addTweet = (Text, Category, Classification, Handle, callback) => {
 	Training.create({Text}, (err, tweet) => {
 		if (err) {
 			throw err;
@@ -40,10 +40,11 @@ module.exports.addTweet = (Text, Category, Classification, Handle) => {
 			tweet.Classification = Classification;
 			tweet.Handle = Handle;
 			tweet.save((err, updatedTweet) => {
-				console.log(updatedTweet);
+        console.log('tweet saved');
+				callback();
 			});
 		}
-	});
+	})
 };
 
 module.exports.findHandle = (Handle, callback) => {
@@ -76,7 +77,7 @@ module.exports.increaseCount = (Handle, callback) => {
 };
 
 
-// Schema of our dataset used to determine if a user is mostly democrat or replublican
+// // Schema of our dataset used to determine if a user is mostly democrat or replublican
 // var partySchema = mongoose.Schema({
 //   commonFriends: Object,
 //   commonWords: Object
