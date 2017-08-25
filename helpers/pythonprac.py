@@ -62,5 +62,4 @@ for tweet in collection.distinct('Text', {'Classification': 0}):
     for word in meaningful_words:
         clean.append(SnowballStemmer("english").stem(word))
     patrick_demo.append(clean)
-    print(patrick_demo)
     jasper_demo.append(0)
