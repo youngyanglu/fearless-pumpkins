@@ -46,6 +46,7 @@ const republicanTweetUpdate = () => {
 			})
 		}, (err) => {
 			if (err){
+				console.log(err);
 				reject(err);
 			} else {
 				console.log('finished adding all republican tweets')
@@ -54,6 +55,7 @@ const republicanTweetUpdate = () => {
 		});
 	})
 };
+
 
 module.exports.republicanTweetUpdate = republicanTweetUpdate;
 module.exports.democratTweetUpdate = democratTweetUpdate;

@@ -1,6 +1,7 @@
 from pymongo import MongoClient
 import re
 import nltk
+import numpy as np
 # nltk.download_shell()
 from nltk.corpus import stopwords
 from nltk.stem.porter import *
@@ -22,6 +23,9 @@ collection = db.trainings
 # print(collection.distinct('Text'))
 patrick = []
 jasper = []
+dictionary = set()
+eachTweet = []
+Xarray = []
 
 # You need to get the ids as well as the text so you can update afterwards.
 # You can use collection.find({}, {text: 1})
@@ -41,6 +45,7 @@ async def patrick_populater():
         meaningful_words = [w for w in words if not w in stops]
         clean = []
         for word in meaningful_words:
+            dictionary.add(word)
             clean.append(SnowballStemmer("english").stem(word))
         patrick.append(clean)
         jasper.append(1)
@@ -59,27 +64,18 @@ async def patrick_populater():
         meaningful_words = [w for w in words if not w in stops]
         clean = []
         for word in meaningful_words:
+            dictionary.add(word)
             clean.append(SnowballStemmer("english").stem(word))
         patrick.append(clean)
         jasper.append(0)
 
-    return jasper, patrick;
-
-
-async def test():
-    jasper, patrick = await patrick_populater()
-    seralizeTweets()
-
-loop = asyncio.get_event_loop()
-loop.run_until_complete(test())
-loop.close()
-
+    return patrick;
 
 # compares words in trainingModel to each word in every tweet
 # creates a new array with a 1 where each word matched and a 0 otherwise
 # returns [[0,1,0,0], [1,1,0,0], [0,0,1,1]]
-eachTweet = []
-def seralizeTweets(tweets, trainingModel):
+
+async def seralizeTweets(tweets, trainingModel):
     for tweet in tweets:
         temp = []
         for word in trainingModel:
@@ -88,3 +84,15 @@ def seralizeTweets(tweets, trainingModel):
             else:
                 temp.append(0)
         eachTweet.append(temp)
+    return eachTweet
+
+async def engine():
+    patrick = await patrick_populater()
+    dictionaryList = list(dictionary)
+    print(dictionaryList)
+    Xarray = await seralizeTweets(patrick, dictionaryList)
+    print(eachTweet)
+    
+loop = asyncio.get_event_loop()
+loop.run_until_complete(engine())
+loop.close()
