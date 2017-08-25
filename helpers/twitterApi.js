@@ -27,7 +27,7 @@ var config = require('../config.js')
 //   console.log(body); //the bearer token...
 
 // });
-const MAX_TWEETS = 200;
+const MAX_TWEETS = 2;
 const MAX_FRIENDS = 2;
 
 var consumerKey = process.env.twitterConsumerKey || config.twitterKey.consumerKey;
@@ -102,6 +102,7 @@ var getTweets = function(screenName, callback) {
     client.get('statuses/user_timeline', params, function(error, tweets, response) {
       if (error) {
         console.log(error);
+        console.log(screenName);
         reject(error);
       } else if (tweets.length === 0) {
         reject('No tweets found. Unknown screen name.');  

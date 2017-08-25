@@ -3,8 +3,7 @@ const Python = require("python-runner");
 Python.execScript(
 	__dirname + "/mlPredictor.py",
 	{
-		bin: "python2.7",
-		args: [ "argument" ]
+		bin: "python3"
 	}
 )
 .then(function(data){
