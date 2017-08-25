@@ -20,78 +20,92 @@ app.use(bodyParser.urlencoded({ extended: false }));
 // parse application/json
 app.use(bodyParser.json());
 
+app.post('/name', (req, res) => {
+  twitterApi.getTweets(req.body.screenName)
+  .then((parsedTweets) => {
+    return parsedTweets;
+  })
+  .then((response) => {
+    response.infographicState.dem.percent = 20;
+    response.infographicState.rep.percent = 80;
+    return response;
+  })
+  .then((response) => {
+    res.status(200).send(response);
+  });
+});
 
 // should return to the client the data for the infographic
-app.post('/name', function (req, res) {
-  if (!req.body) { return res.sendStatus(400); }
+// app.post('/name', function (req, res) {
+//   if (!req.body) { return res.sendStatus(400); }
 
-  console.log('POST received screen_name: ', req.body.screenName);
+//   console.log('POST received screen_name: ', req.body.screenName);
 
-  // check if screenname allredy in db
-  db.isTwitterUserLastUpdateYoungerThan(req.body.screenName)
-    .then(function(bool) {
-      if (bool) {
-        // if allready in db and younger than 2 days
-        // update count and return database row
-        db.updateCount(req.body.screenName)
-          .then(function(dbOutput) {
-            res.status(200).send(dbOutput);
-          })
-          .catch(function(err) {
-            res.status(400).send(err);
-          });
+//   // check if screenname allredy in db
+//   db.isTwitterUserLastUpdateYoungerThan(req.body.screenName)
+//     .then(function(bool) {
+//       if (bool) {
+//         // if allready in db and younger than 2 days
+//         // update count and return database row
+//         db.updateCount(req.body.screenName)
+//           .then(function(dbOutput) {
+//             res.status(200).send(dbOutput);
+//           })
+//           .catch(function(err) {
+//             res.status(400).send(err);
+//           });
 
-      } else {
-        // if not in db or older than 2 days
-        // get tweets friens google API and pass by the machine
-        twitterApi.getTweets(req.body.screenName)
-          .then(function(parsedTweets) {
-            return parsedTweets;
+//       } else {
+//         // if not in db or older than 2 days
+//         // get tweets friens google API and pass by the machine
+//         twitterApi.getTweets(req.body.screenName)
+//           .then(function(parsedTweets) {
+//             return parsedTweets;
 
-          }).then(function(parsedTweets) {
-            var parsedTweetsWithFriends = twitterApi.getFriends(parsedTweets);
-            return parsedTweetsWithFriends;
-          }).then(function(parsedTweetsWithFriends) {
-            var lexicalAnalysisWithFriends = googleApi.sendToGoogleAPI(parsedTweetsWithFriends);
-            return lexicalAnalysisWithFriends;
+//           }).then(function(parsedTweets) {
+//             var parsedTweetsWithFriends = twitterApi.getFriends(parsedTweets);
+//             return parsedTweetsWithFriends;
+//           }).then(function(parsedTweetsWithFriends) {
+//             var lexicalAnalysisWithFriends = googleApi.sendToGoogleAPI(parsedTweetsWithFriends);
+//             return lexicalAnalysisWithFriends;
 
-          }).then(function(lexicalAnalysisWithFriends) {
-            // send user to the machine
-            var dbInput = engine.democratOrRepublican(lexicalAnalysisWithFriends);
+//           }).then(function(lexicalAnalysisWithFriends) {
+//             // send user to the machine
+//             var dbInput = engine.democratOrRepublican(lexicalAnalysisWithFriends);
 
-            var dbOutput = db.writeTwitterUser(dbInput);
-            return dbOutput;
+//             var dbOutput = db.writeTwitterUser(dbInput);
+//             return dbOutput;
 
-          }).then(function(dbOutput) {
-            res.status(200).send(dbOutput);
+//           }).then(function(dbOutput) {
+//             res.status(200).send(dbOutput);
 
-          }).catch(function(err) {
-            if (err[0]) {
-              if (err[0].message === 'Rate limit exceeded' && err[0].code === 88 ) {
-                twitterApi.getRateLimitStatus()
-                  .then(function(limitRate) {
-                    res.status(200).send(limitRate);
-                  }).catch(function(err) {
-                    console.log('error: ', err);
-                    res.status(400).send(err);
-                  });
-              } else {
-                console.log('error: ', err);
-                res.status(400).send(err);
-              }
-            } else {
-              console.log('error: ', err);
-              res.status(400).send(err);
-            }
-          });
-      }
+//           }).catch(function(err) {
+//             if (err[0]) {
+//               if (err[0].message === 'Rate limit exceeded' && err[0].code === 88 ) {
+//                 twitterApi.getRateLimitStatus()
+//                   .then(function(limitRate) {
+//                     res.status(200).send(limitRate);
+//                   }).catch(function(err) {
+//                     console.log('error: ', err);
+//                     res.status(400).send(err);
+//                   });
+//               } else {
+//                 console.log('error: ', err);
+//                 res.status(400).send(err);
+//               }
+//             } else {
+//               console.log('error: ', err);
+//               res.status(400).send(err);
+//             }
+//           });
+//       }
 
-    })
-    .catch(function(err) {
-      console.log('error: ', err);
-      res.status(400).send(err);
-    });
-});
+//     })
+//     .catch(function(err) {
+//       console.log('error: ', err);
+//       res.status(400).send(err);
+//     });
+// });
 
 // should return to the client the data for the infographic
 app.post('/limitRate', function (req, res) {
