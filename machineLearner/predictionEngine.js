@@ -10,4 +10,3 @@ Python.execScript(
 .then(function(data){
     console.log(data);
 });
-
