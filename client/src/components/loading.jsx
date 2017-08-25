@@ -12,13 +12,16 @@ const Loading = (props) => {
     'Scratching my head...',
     'Jumping rope...',
     'Drinking coffee...',
-    'Shacking head...',
+    'Shaking head...',
     'Looking for silly sentence...',
     'This is not a placeholder...',
     'Zzz...',
     'Solving world problems...',
     'Creating a new universe...',
-    'Shifting tables...'
+    'Shifting tables...',
+    'Microwaving popcorn...',
+    'Loading nerf gun...',
+    'Brainstorming loading sentences...'
   ];
 
   // Returns a random index from o to length of phrases array - 1
