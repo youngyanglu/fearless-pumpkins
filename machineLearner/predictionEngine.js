@@ -1,11 +1,15 @@
 const Python = require("python-runner");
 
-Python.execScript(
-	__dirname + "/mlPredictor.py",
-	{
-		bin: "python3"
-	}
-)
-.then(function(data){
-    console.log(data);
-});
+module.exports = (Handle) => {
+	Python.execScript(
+		__dirname + "/mlPredictor.py",
+		{
+			bin: "python3" // how to pass variables to python file?
+		}
+	)
+	.then(function(percentages){
+	    console.log(percentages);
+	});
+}
+
+	

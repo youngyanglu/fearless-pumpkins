@@ -15,17 +15,3 @@ new CronJob('00 30 23 * * *', function() {
 		)
 	);
 }, null, true, 'America/Los_Angeles');
-
-
-
-twitterFetcher.democratTweetUpdate()
-.then(twitterFetcher.republicanTweetUpdate)
-.then(
-	Python.execScript(
-		__dirname + "/mlTrainer.py",
-		{
-			bin: "python3.6",
-			args: [ "argument" ]
-		}
-	)
-);
