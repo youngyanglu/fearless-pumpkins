@@ -67,3 +67,8 @@ probability2 = politics.predict_proba([test])
 print(prediction2)
 print(probability2)
 
+prediction3 = gender.predict([test])
+probability3 = gender.predict_proba([test])
+
+prediction4 = religion.predict([test])
+probability4 = religion.predict_proba([test])
