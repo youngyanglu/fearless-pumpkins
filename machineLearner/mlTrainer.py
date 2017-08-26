@@ -1,5 +1,6 @@
 from sklearn import svm
 from sklearn.externals import joblib
+from sklearn.model_selection import GridSearchCV
 from pymongo import MongoClient
 import re
 import nltk
@@ -27,25 +28,6 @@ eachTweet = []
 # You can use collection.find({}, {text: 1})
 # It gives all the ids and text.
 async def patrick_populater():
-    for tweet in collection.distinct('Text', {'Classification': 1}):
-        meaningful_words = []
-        nonum = re.sub("[\d*]",
-            "number ",
-            tweet)
-        letters_only = re.sub("[^a-zA-Z]",
-            " ",
-            nonum)
-        nourlwords = re.sub(r'^https?:\/\/.*[\r\n]*', 'http ', letters_only, flags=re.MULTILINE)
-        words =  nourlwords.lower().split()
-        stops = set(stopwords.words("english"))
-        meaningful_words = [w for w in words if not w in stops]
-        clean = []
-        for word in meaningful_words:
-            dictionary.add(word)
-            clean.append(SnowballStemmer("english").stem(word))
-        patrick.append(clean)
-        jasper.append(1)
-
     for tweet in collection.distinct('Text', {'Classification': 0}):
         meaningful_words = []
         nonum = re.sub("[\d*]",
@@ -64,6 +46,25 @@ async def patrick_populater():
             clean.append(SnowballStemmer("english").stem(word))
         patrick.append(clean)
         jasper.append(0)
+
+    for tweet in collection.distinct('Text', {'Classification': 1}):
+        meaningful_words = []
+        nonum = re.sub("[\d*]",
+            "number ",
+            tweet)
+        letters_only = re.sub("[^a-zA-Z]",
+            " ",
+            nonum)
+        nourlwords = re.sub(r'^https?:\/\/.*[\r\n]*', 'http ', letters_only, flags=re.MULTILINE)
+        words =  nourlwords.lower().split()
+        stops = set(stopwords.words("english"))
+        meaningful_words = [w for w in words if not w in stops]
+        clean = []
+        for word in meaningful_words:
+            dictionary.add(word)
+            clean.append(SnowballStemmer("english").stem(word))
+        patrick.append(clean)
+        jasper.append(1)
 
     return patrick;
 
@@ -85,18 +86,29 @@ async def seralizeTweets(tweets, trainingModel):
 async def engine():
     patrick = await patrick_populater()
     dictionaryList = list(dictionary)
-    print(dictionaryList)
+    print(dictionaryList[0])
     Xarray = await seralizeTweets(patrick, dictionaryList)
-    print(eachTweet)
+    print(eachTweet[300])
+    print(jasper[300])
+
+politics = joblib.load('politicsPrediction.pkl')
+
+async def wordClassifier():
+    # create array of same legnth as dictionary
+    # at each index, make it a 1
+    # predict probability
+    # if probability of one side exceeds 70%
+    # store the word and the side it belongs to in dict
     
 loop = asyncio.get_event_loop()
 loop.run_until_complete(engine())
 loop.close()
 
+# parameters = {'kernel':('linear', 'rbf'), 'C':[1, 10, 50]}
+# X = np.array(eachTweet)
+# y = np.array(jasper)
+# politics = svm.SVC(probability=True)
+# politicsOp = GridSearchCV(politics, parameters)
+# politicsOp.fit(X, y)
 
-X = np.array(eachTweet)
-y = np.array(jasper)
-politics = svm.SVC(probability=True)
-politics.fit(X, y) 
-
-joblib.dump(politics, 'politicsPrediction.pkl') 
+# joblib.dump(politicsOp, 'politicsPrediction.pkl') 
