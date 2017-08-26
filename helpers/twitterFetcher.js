@@ -96,13 +96,5 @@ module.exports.genderUpdateTweets = () => {
 	});
 };
 
-
-<<<<<<< HEAD
 module.exports.republicanTweetUpdate = republicanTweetUpdate;
 module.exports.democratTweetUpdate = democratTweetUpdate;
-=======
-module.exports.updateTweets();
-module.exports.religionUpdateTweets();
-module.exports.genderUpdateTweets();
-
->>>>>>> updated
