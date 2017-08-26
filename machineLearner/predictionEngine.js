@@ -1,15 +1,29 @@
 const Python = require("python-runner");
+const database = require('../db/db.js');
+const PythonShell = require('python-shell');
+const twitterApi = require('../helpers/twitterApi.js');
+const async = require('async');
 
 module.exports = (Handle) => {
-	Python.execScript(
-		__dirname + "/mlPredictor.py",
-		{
-			bin: "python3" // how to pass variables to python file?
-		}
-	)
-	.then(function(percentages){
-	    console.log(percentages);
-	});
+	twitterApi.getTweets(Handle)
+	.then((parsedTweets) => {
+		var tweets = '';
+		async.each(parsedTweets.tweets, function(tweet, callback) {
+			tweets += tweet + ';'
+		})
+		return tweets;
+	})
+	.then((tweets) => {
+		var options = {
+		  mode: 'text',
+		  pythonPath: 'python3',
+		  args: [tweets]
+		};
+		PythonShell.run('/mlPredictor.py', options, function (err, results) {
+		  if (err) throw err;
+		  console.log('results: %j', results);
+		});
+	})
 }
 
-	
+module.exports('hillaryclinton')

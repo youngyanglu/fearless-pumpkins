@@ -1,17 +1,19 @@
 const CronJob = require('cron').CronJob;
-const Python = require("python-runner");
+var PythonShell = require('python-shell');
 const twitterFetcher = require('../helpers/twitterFetcher.js');
 
-new CronJob('00 30 23 * * *', function() {
+var options = {
+  mode: 'text',
+  pythonPath: 'python3',
+};
+
+// new CronJob('00 30 23 * * *', function() {
 	twitterFetcher.democratTweetUpdate()
 	.then(twitterFetcher.republicanTweetUpdate)
-	.then(
-		Python.execScript(
-			__dirname + "/mlTrainer.py",
-			{
-				bin: "python3.6",
-				args: [ "argument" ]
-			}
-		)
-	);
-}, null, true, 'America/Los_Angeles');
+	// .then(
+	// 	PythonShell.run('/mlTrainer.py', options, (err, results) => {
+	// 	  if (err) throw err;
+	// 	  console.log('results: %j', results);
+	// 	});
+	// );
+// }, null, true, 'America/Los_Angeles');
