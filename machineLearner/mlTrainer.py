@@ -21,8 +21,11 @@ db = client['dataSet']
 collection = db.trainings
 patrick = []
 jasper = []
-dictionary = set()
+dictionary = {}
 eachTweet = []
+categories = ['politics', 'religion', 'gender']
+
+
 
 # You need to get the ids as well as the text so you can update afterwards.
 # You can use collection.find({}, {text: 1})
@@ -32,7 +35,7 @@ async def patrick_populater(category):
     for tweet in collection.distinct('Text', {'Classification': 0, 'Category': category}):
         meaningful_words = []
         nonum = re.sub("[\d*]",
-            "number ",
+            " number ",
             tweet)
         letters_only = re.sub("[^a-zA-Z]",
             " ",
@@ -43,8 +46,12 @@ async def patrick_populater(category):
         meaningful_words = [w for w in words if not w in stops]
         clean = []
         for word in meaningful_words:
-            dictionary.add(word)
-            clean.append(SnowballStemmer("english").stem(word))
+            stemmed = SnowballStemmer("english").stem(word)
+            try:
+                dictionary[stemmed] = dictionary[stemmed] + 1 
+            except KeyError:
+                dictionary[stemmed] = 1
+            clean.append(stemmed)
         patrick.append(clean)
         jasper.append(0)
 
@@ -62,8 +69,12 @@ async def patrick_populater(category):
         meaningful_words = [w for w in words if not w in stops]
         clean = []
         for word in meaningful_words:
-            dictionary.add(word)
-            clean.append(SnowballStemmer("english").stem(word))
+            stemmed = SnowballStemmer("english").stem(word)
+            try:
+                dictionary[stemmed] = dictionary[stemmed] + 1 
+            except KeyError:
+                dictionary[stemmed] = 1
+            clean.append(stemmed)
         patrick.append(clean)
         jasper.append(1)
 
@@ -84,17 +95,16 @@ async def seralizeTweets(tweets, trainingModel):
         eachTweet.append(temp)
     return eachTweet
 
-async def engine(category):
-    patrick = await patrick_populater(category)
-    dictionaryList = list(dictionary)
-    print(dictionaryList[0])
+async def engine():
+    patrick = await patrick_populater()
+    dictionaryList = []
+    for key, value in dictionary.items():
+        if value > 1 and len(key) > 2:
+            dictionaryList.append(key)
+    f = open('politicsDictionary.txt','w')
+    f.write(' '.join(dictionaryList))
+    f.close()
     Xarray = await seralizeTweets(patrick, dictionaryList)
-    print(eachTweet[300])
-    print(jasper[300])
-
-politics = joblib.load('politicsPrediction.pkl')
-gender = joblib.load('genderPrediction.pkl')
-religion = joblib.load('religionPrediction.pkl')
 
 # async def wordClassifier():
     # create array of same legnth as dictionary
@@ -102,38 +112,16 @@ religion = joblib.load('religionPrediction.pkl')
     # predict probability
     # if probability of one side exceeds 70%
     # store the word and the side it belongs to in dict
-categories = ['Politics', 'Religion', 'Gender']
+   
+loop = asyncio.get_event_loop()
+loop.run_until_complete(engine())
+loop.close()
 
-for category in categories:    
-    loop = asyncio.get_event_loop()
-    loop.run_until_complete(engine(category))
-    loop.close()
+parameters = {'C':[10, 50, 100]}
+X = np.array(eachTweet)
+y = np.array(jasper)
+politics = svm.SVC(probability=True)
+politicsOp = GridSearchCV(politics, parameters)
+politicsOp.fit(X, y)
 
-# parameters = {'kernel':('linear', 'rbf'), 'C':[1, 10, 50]}
-# X = np.array(eachTweet)
-# y = np.array(jasper)
-# politics = svm.SVC(probability=True)
-# politicsOp = GridSearchCV(politics, parameters)
-# politicsOp.fit(X, y)
-            
-# joblib.dump(politicsOp, 'politicsPrediction.pkl') 
-joblib.dump(politics, 'politicsPrediction.pkl') 
-
-# parameters = {'kernel':('linear', 'rbf'), 'C':[1, 10, 50]}
-# X = np.array(eachTweet)
-# y = np.array(jasper)
-# religion = svm.SVC(probability=True)
-# religion = GridSearchCV(religion, parameters)
-# religion.fit(X, y)
-
-joblib.dump(religion, 'relgionPrediction.pkl')
-
-# parameters = {'kernel':('linear', 'rbf'), 'C':[1, 10, 50]}
-# X = np.array(eachTweet)
-# y = np.array(jasper)
-# gender = svm.SVC(probability=True)
-# gender = GridSearchCV(gender, parameters)
-# gender.fit(X, y)
-
-joblib.dump(gender, 'genderPrediction.pkl')
-
+joblib.dump(politicsOp, 'politicsPrediction.pkl') 
