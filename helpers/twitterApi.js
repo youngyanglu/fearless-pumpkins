@@ -27,7 +27,7 @@ var config = require('../config.js')
 //   console.log(body); //the bearer token...
 
 // });
-const MAX_TWEETS = 2;
+const MAX_TWEETS = 5;
 const MAX_FRIENDS = 2;
 
 var consumerKey = process.env.twitterConsumerKey || config.twitterKey.consumerKey;
