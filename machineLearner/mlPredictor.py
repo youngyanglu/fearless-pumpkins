@@ -15,10 +15,11 @@ pool =  Pool()
 import asyncio
 
 politics = joblib.load('politicsPrediction.pkl')
+religion = joblib.load('religionPrediction.pkl')
+gender = joblib.load('genderPrediction.pkl')
 
 # client = MongoClient('localhost', 27017)
 # db = client['dataSet']
-
 # collection = db.cache
 # tweets = []
 # predictions = []
@@ -66,4 +67,11 @@ probability2 = politics.predict_proba([test])
 
 print(prediction2)
 print(probability2)
+
+prediction3 = gender.predict([test])
+probability3 = gender.predict_proba([test])
+
+prediction4 = religion.predict([test])
+probability4 = religion.predict_proba([test])
+
 

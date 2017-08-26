@@ -56,6 +56,45 @@ const republicanTweetUpdate = () => {
 	})
 };
 
+module.exports.religionUpdateTweets = () => {
+	forEach(twitterHandles.religious, function(handle, index, arr) {
+  		twitterApi.getTweets(handle)
+		.then((parsedTweets) => {
+			for (var i = 0; i < parsedTweets.tweets.length; i++) {
+				database.addTweet(parsedTweets.tweets[i], 'Religion', 0, handle);
+			}
+		});
+	});
+
+	forEach(twitterHandles.atheist, function(handle, index,arr) {
+	  	twitterApi.getTweets(handle)
+		.then((parsedTweets) => {
+			for (var i = 0; i < parsedTweets.tweets.length; i++) {
+				database.addTweet(parsedTweets.tweets[i], 'Religion', 1, handle);
+			}
+		});
+	});
+};
+
+module.exports.genderUpdateTweets = () => {
+	forEach(twitterHandles.male, function(handle, index, arr) {
+  		twitterApi.getTweets(handle)
+		.then((parsedTweets) => {
+			for (var i = 0; i < parsedTweets.tweets.length; i++) {
+				database.addTweet(parsedTweets.tweets[i], 'Gender', 0, handle);
+			}
+		});
+	});
+
+	forEach(twitterHandles.female, function(handle, index,arr) {
+	  	twitterApi.getTweets(handle)
+		.then((parsedTweets) => {
+			for (var i = 0; i < parsedTweets.tweets.length; i++) {
+				database.addTweet(parsedTweets.tweets[i], 'Gender', 1, handle);
+			}
+		});
+	});
+};
 
 module.exports.republicanTweetUpdate = republicanTweetUpdate;
 module.exports.democratTweetUpdate = democratTweetUpdate;
