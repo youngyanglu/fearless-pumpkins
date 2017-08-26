@@ -89,7 +89,7 @@ class Analytics extends React.Component {
               {this.state.data.name} appears to be <a className={styles.dem_font_color}>{parseFloat(this.state.data.infographicState.dem.percent).toFixed(2)}%
               Democrat</a> and <a className={styles.rep_font_color}>{parseFloat(this.state.data.infographicState.rep.percent).toFixed(2)}% Republican</a>.</p>
             </div>
-            <BubbleApp usertweets={this.state.data.words}/>
+            {/*<BubbleApp usertweets={this.state.data.words}/>
             <div className={styles.word_bubble_description}>
               <div className={styles.description_title}>WORD BUBBLE DESCRIPTION</div>
               <p>Each bubble in the chart above represents a word of importance to the twitter user, a word that has
@@ -104,7 +104,7 @@ class Analytics extends React.Component {
                 political party on the Twitter user. Impact ranges from 0-100%.</li>
               </ul>
 
-            </div>
+            </div>*/}
           </div>
 
         </div>

@@ -105,7 +105,7 @@ var getTweets = function(screenName, callback) {
         console.log(screenName);
         reject(error);
       } else if (tweets.length === 0) {
-        reject('No tweets found. Unknown screen name.');  
+        reject('No tweets found. Unknown screen name.');
       } else {
         resolve(parseTweets(screenName, tweets));
       }
@@ -134,14 +134,14 @@ var getFriends = function(tweets, callback) {
 var getRateLimitStatus = function(tweets, callback) {
   var promiseGetRateLimitStatus = new Promise(function(resolve, reject) {
     var result = {};
-    var params = { resources: 'friends,statuses'}; 
+    var params = { resources: 'friends,statuses'};
     client.get('application/rate_limit_status', params, function(error, rateLimitStatus) {
       if (error) {
         reject(error);
       } else {
         result.userTimeline = rateLimitStatus.resources.statuses['/statuses/user_timeline'];
-        result.userTimeline.reset = Math.round((rateLimitStatus.resources.statuses['/statuses/user_timeline'].reset * 1000 - (new Date).getTime()) / (1000 * 60));   
-        result.friendsList = rateLimitStatus.resources.friends['/friends/list'];   
+        result.userTimeline.reset = Math.round((rateLimitStatus.resources.statuses['/statuses/user_timeline'].reset * 1000 - (new Date).getTime()) / (1000 * 60));
+        result.friendsList = rateLimitStatus.resources.friends['/friends/list'];
         result.friendsList.reset = Math.round((rateLimitStatus.resources.friends['/friends/list'].reset * 1000 - (new Date).getTime()) / (1000 * 60));
         resolve(result);
       }
@@ -154,12 +154,12 @@ var getRateLimitStatus = function(tweets, callback) {
 var getUsersSearch = function(q, callback) {
   var promiseGetUsersSearch = new Promise(function(resolve, reject) {
     var result = {};
-    var params = { q: q}; 
+    var params = { q: q};
     client.get('users/search', params, function(error, users) {
       if (error) {
         reject(error);
       } else {
-        
+
         resolve(users.map(function(user) {
           return {screenName: user.screen_name, name: user.name };
         }));
@@ -178,7 +178,3 @@ module.exports.getTweets = getTweets;
 module.exports.getFriends = getFriends;
 module.exports.getRateLimitStatus = getRateLimitStatus;
 module.exports.getUsersSearch = getUsersSearch;
-
-
-
-
