@@ -1,11 +1,10 @@
-
 var express = require('express');
 var request = require('request');
 var bodyParser = require('body-parser');
 var twitterApi = require('../helpers/twitterApi.js');
-var googleApi = require('../helpers/googleAPI.js');
+// var googleApi = require('../helpers/googleAPI.js');
 var db = require('../db/db.js');
-var engine = require('../helpers/tweetricsEngine.js');
+// var engine = require('../helpers/tweetricsEngine.js');
 
 var app = express();
 
@@ -26,8 +25,9 @@ app.post('/name', (req, res) => {
     return parsedTweets;
   })
   .then((response) => {
-    response.infographicState.dem.percent = 20;
-    response.infographicState.rep.percent = 80;
+    response.infographicState = {};
+    response.infographicState.dem = {percent: 20};
+    response.infographicState.rep = {percent:80};
     return response;
   })
   .then((response) => {
@@ -131,6 +131,7 @@ app.post('/usersSearch', function (req, res) {
 
   twitterApi.getUsersSearch(req.body.q)
     .then(function(users) {
+      console.log('Searched user: ', users);
       res.status(200).send(users);
 
     }).catch(function(err) {
@@ -143,15 +144,23 @@ app.post('/usersSearch', function (req, res) {
 app.get('/usersList', function (req, res) {
 
   console.log('GET request for users list received');
-
-  db.fetchAllTwitterUsers()
-    .then(function(users) {
-      res.status(200).send(users);
-
-    }).catch(function(err) {
-      console.log('error: ', err);
+  let callback = (err, users) => {
+    if (err) {
+      console.log('error in usersList: ', err);
       res.status(400).send(err);
-    });
+    } else {
+      res.status(200).send(users);
+    }
+  }
+  db.findAllHandles(callback);
+  // db.fetchAllTwitterUsers()
+  //   .then(function(users) {
+  //     res.status(200).send(users);
+  //
+  //   }).catch(function(err) {
+  //     console.log('error: ', err);
+  //     res.status(400).send(err);
+  //   });
 });
 
 // should return true if in db and youbger than 2 days or false
@@ -183,7 +192,6 @@ app.post('/updateCount', function (req, res) {
       res.status(400).send(err);
     });
 });
-
 
 app.listen(app.get('port'), function(err) {
   if (err) {

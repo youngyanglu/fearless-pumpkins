@@ -13,7 +13,7 @@
   padding: 0;
   margin: 10px;
   width: 30%;
-  max-height: 300px;
+  max-height: 700px;
   top: 50%;
   text-align: center;
   box-shadow: 10px 10px rgba(0, 0, 0, 0.34);
@@ -95,4 +95,10 @@ form {
   border-color: #67a2ce;
   color: #67a2ce;
   background-color: white;
+}
+
+.input_separator {
+  border-top: dotted;
+  border-bottom: dotted;
+  border-width: medium;
 }
