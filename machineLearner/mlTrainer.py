@@ -112,3 +112,23 @@ loop.close()
 # politicsOp.fit(X, y)
 
 # joblib.dump(politicsOp, 'politicsPrediction.pkl') 
+joblib.dump(politics, 'politicsPrediction.pkl') 
+
+X = np.array([[0, 0], [1, 1]])
+y = np.array([0, 1])
+religion = svm.SVC(probability=True)
+religion.fit(X, y) 
+prediction = religion.predict([[2., 2.]])
+probability = religion.predict_proba([[2., 2.]])
+
+joblib.dump(religion, 'relgionPrediction.pkl')
+
+X = np.array([[0, 0], [1, 1]])
+y = np.array([0, 1])
+gender = svm.SVC(probability=True)
+gender.fit(X, y) 
+prediction = gender.predict([[2., 2.]])
+probability = gender.predict_proba([[2., 2.]])
+
+joblib.dump(gender, 'genderPrediction.pkl')
+
