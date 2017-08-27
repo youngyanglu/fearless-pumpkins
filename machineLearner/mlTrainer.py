@@ -1,6 +1,8 @@
 from sklearn import svm
+from sklearn.neural_network import MLPClassifier
 from sklearn.externals import joblib
 from sklearn.model_selection import GridSearchCV
+
 from pymongo import MongoClient
 import re
 import nltk
@@ -19,19 +21,46 @@ client = MongoClient('localhost', 27017)
 db = client['dataSet']
 
 collection = db.trainings
-patrick = []
-jasper = []
-dictionary = {}
-eachTweet = []
-categories = ['politics', 'religion', 'gender']
 
+eachTweetWord = []
+tweetDictionary = {}
+eachTweetSer = []
+tweetCategorisation = []
+
+
+eachFriendWord = []
+friendDictionary = {}
+eachFriendSer = []
+friendCategorisation = []
 
 
 # You need to get the ids as well as the text so you can update afterwards.
 # You can use collection.find({}, {text: 1})
 # It gives all the ids and text.
-async def patrick_populater():
-    for tweet in collection.distinct('Text', {'Classification': 0}):
+
+async def friendCleaner():
+    for friendString in collection.distinct('Text', {'Classification': 0, 'Category': 'Politics'}):
+        friendCategorisation.append(0)
+        friendList = friendString.split(', ');
+        eachFriendWord.append(friendList)
+        for friend in friendList:
+            try:
+                friendDictionary[friend] = friendDictionary[friend] + 1 
+            except KeyError:
+                friendDictionary[friend] = 1
+    for friendString in collection.distinct('Text', {'Classification': 1, 'Category': 'Politics'}):
+        friendCategorisation.append(1)
+        friendList = friendString.split(', ');
+        eachFriendWord.append(friendList)
+        for friend in friendList:
+            try:
+                friendDictionary[friend] = friendDictionary[friend] + 1 
+            except KeyError:
+                friendDictionary[friend] = 1
+    return eachFriendWord
+
+async def tweetCleaner():
+    for tweet in collection.distinct('Text', {'Classification': 0, 'Category': 'Gender'}):
         meaningful_words = []
         nonum = re.sub("[\d*]",
             " number ",
@@ -47,14 +76,14 @@ async def patrick_populater():
         for word in meaningful_words:
             stemmed = SnowballStemmer("english").stem(word)
             try:
-                dictionary[stemmed] = dictionary[stemmed] + 1 
+                tweetDictionary[stemmed] = tweetDictionary[stemmed] + 1 
             except KeyError:
-                dictionary[stemmed] = 1
+                tweetDictionary[stemmed] = 1
             clean.append(stemmed)
-        patrick.append(clean)
-        jasper.append(0)
+        eachTweetWord.append(clean)
+        tweetCategorisation.append(0)
 
-    for tweet in collection.distinct('Text', {'Classification': 1}):
+    for tweet in collection.distinct('Text', {'Classification': 1, 'Category': 'Gender'}):
         meaningful_words = []
         nonum = re.sub("[\d*]",
             " number ",
@@ -70,57 +99,87 @@ async def patrick_populater():
         for word in meaningful_words:
             stemmed = SnowballStemmer("english").stem(word)
             try:
-                dictionary[stemmed] = dictionary[stemmed] + 1 
+                tweetDictionary[stemmed] = tweetDictionary[stemmed] + 1 
             except KeyError:
-                dictionary[stemmed] = 1
+                tweetDictionary[stemmed] = 1
             clean.append(stemmed)
-        patrick.append(clean)
-        jasper.append(1)
+        eachTweetWord.append(clean)
+        tweetCategorisation.append(1)
 
-    return patrick;
+    return eachTweetWord;
 
 # compares words in trainingModel to each word in every tweet
 # creates a new array with a 1 where each word matched and a 0 otherwise
 # returns [[0,1,0,0], [1,1,0,0], [0,0,1,1]]
 
-async def seralizeTweets(tweets, trainingModel):
-    for tweet in tweets:
+async def serialize(list, dictionary, container):
+    for item in list:
         temp = []
-        for word in trainingModel:
-            if word in tweet:
+        for word in dictionary:
+            if word in item:
                 temp.append(1)
             else:
                 temp.append(0)
-        eachTweet.append(temp)
-    return eachTweet
+        container.append(temp)
+    return container
 
-async def engine():
-    patrick = await patrick_populater()
-    dictionaryList = []
-    for key, value in dictionary.items():
-        if value > 1 and len(key) > 2:
-            dictionaryList.append(key)
-    f = open('politicsDictionary.txt','w')
-    f.write(' '.join(dictionaryList))
+# # tweet analysis
+
+# async def tweetEngine():
+#     eachTweetWord = await tweetCleaner()
+#     dictionaryList = []
+#     for key, value in tweetDictionary.items():
+#         if value > 2 and len(key) > 2:
+#             dictionaryList.append(key)
+#     f = open('genderDictionary.txt','w')
+#     f.write(' '.join(dictionaryList))
+#     f.close()
+#     Xarray = await serialize(eachTweetWord, dictionaryList, eachTweetSer)
+
+# loop = asyncio.get_event_loop()
+# loop.run_until_complete(tweetEngine())
+# loop.close()
+
+# parameters = {'alpha':[1e-4, 1e-5, 1e-6]}
+# X = np.array(eachTweetSer)
+# y = np.array(tweetCategorisation)
+# NNgender = MLPClassifier(solver='lbfgs', hidden_layer_sizes=(20,20,20), random_state=1)
+# # SVMgender = svm.SVC(probability=True)
+# genderOp = GridSearchCV(NNgender, parameters)
+# genderOp.fit(X, y)
+
+# joblib.dump(genderOp, 'genderPrediction.pkl') 
+
+# friend analysis 
+
+async def friendEngine():
+    eachFriendWord = await friendCleaner()
+    friendList = []
+    for key, value in friendDictionary.items():
+        if value > 1:
+            friendList.append(key)
+    f = open('politicsFriends.txt', 'w')
+    f.write(' '.join(friendList))
     f.close()
-    Xarray = await seralizeTweets(patrick, dictionaryList)
+    Xarray = await serialize(eachFriendWord, friendList, eachFriendSer)
 
-# async def wordClassifier():
-    # create array of same legnth as dictionary
-    # at each index, make it a 1
-    # predict probability
-    # if probability of one side exceeds 70%
-    # store the word and the side it belongs to in dict
-   
 loop = asyncio.get_event_loop()
-loop.run_until_complete(engine())
+loop.run_until_complete(friendEngine())
 loop.close()
 
-parameters = {'C':[10, 50, 100]}
-X = np.array(eachTweet)
-y = np.array(jasper)
-politics = svm.SVC(probability=True)
-politicsOp = GridSearchCV(politics, parameters)
+parameters = {'alpha':[1e-4, 1e-5, 1e-6]}
+X = np.array(eachFriendSer)
+y = np.array(friendCategorisation)
+NNpolitics = MLPClassifier(solver='lbfgs', random_state=1)
+# SVMpolitics = svm.SVC(probability=True)
+politicsOp = GridSearchCV(NNpolitics, parameters)
 politicsOp.fit(X, y)
 
 joblib.dump(politicsOp, 'politicsPrediction.pkl') 
+
+
+
+
+
+
+

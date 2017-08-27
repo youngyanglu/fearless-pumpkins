@@ -8,8 +8,8 @@ var options = {
 };
 
 // new CronJob('00 30 23 * * *', function() {
-	twitterFetcher.democratTweetUpdate()
-	.then(twitterFetcher.republicanTweetUpdate)
+	// twitterFetcher.femaleTweetUpdate()
+	// .then(twitterFetcher.maleTweetUpdate)
 	// .then(
 	// 	PythonShell.run('/mlTrainer.py', options, (err, results) => {
 	// 	  if (err) throw err;
@@ -17,3 +17,5 @@ var options = {
 	// 	});
 	// );
 // }, null, true, 'America/Los_Angeles');
+twitterFetcher.democratFriendsUpdate()
+.then(twitterFetcher.republicanFriendsUpdate)
