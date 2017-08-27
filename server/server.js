@@ -35,6 +35,27 @@ app.post('/name', (req, res) => {
   });
 });
 
+app.post('/user', (req, res) => {
+  res.status(200);
+
+  // get tweets from a specific city;
+  
+
+  // twitterApi.getTweets(req.body.screenName)
+  // .then((parsedTweets) => {
+  //   return parsedTweets;
+  // })
+  // .then((response) => {
+  //   response.infographicState = {};
+  //   response.infographicState.dem = {percent: 20};
+  //   response.infographicState.rep = {percent:80};
+  //   return response;
+  // })
+  // .then((response) => {
+  //   res.status(200).send(response);
+  // });
+});
+
 // should return to the client the data for the infographic
 // app.post('/name', function (req, res) {
 //   if (!req.body) { return res.sendStatus(400); }
