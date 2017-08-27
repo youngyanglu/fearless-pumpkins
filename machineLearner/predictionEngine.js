@@ -4,7 +4,7 @@ const PythonShell = require('python-shell');
 const twitterApi = require('../helpers/twitterApi.js');
 const async = require('async');
 
-module.exports = (Handle) => {
+module.exports.genderPredictor = (Handle) => {
 	twitterApi.getTweets(Handle)
 	.then((parsedTweets) => {
 		var tweets = '';
@@ -19,11 +19,29 @@ module.exports = (Handle) => {
 		  pythonPath: 'python3',
 		  args: [tweets]
 		};
-		PythonShell.run('/mlPredictor.py', options, function (err, results) {
+		PythonShell.run('/tweetPredictor.py', options, function (err, results) {
 		  if (err) throw err;
 		  console.log('results: %j', results);
 		});
 	})
 }
 
-module.exports('hillaryclinton')
+module.exports.politicalPredictor = (Handle) => {
+	twitterApi.getFriends(Handle)
+	.then((parsedFriends) => {
+		return parsedFriends.join(';')
+	})
+	.then((friends) => {
+		var options = {
+			mode: 'text',
+			pythonPath: 'python3',
+			args: [friends]
+		};
+		PythonShell.run('./friendPredictor.py', options, function(err, results) {
+			if (err) throw err;
+			console.log('results: %j', results);
+		});
+	})
+}
+
+module.exports.politicalPredictor('TheEllenShow')

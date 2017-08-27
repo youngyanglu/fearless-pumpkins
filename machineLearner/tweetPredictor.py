@@ -15,12 +15,12 @@ import sys
 
 pool =  Pool()
 
-politics = joblib.load('politicsPrediction.pkl')
+politics = joblib.load('genderPrediction.pkl')
 cleanedTweets = []
 predictions = []
 probabilities = []
 
-f = open('politicsDictionary.txt', 'r')
+f = open('genderDictionary.txt', 'r')
 dictionaryString = f.read()
 dictionaryList = dictionaryString.split(' ')
 
@@ -58,16 +58,16 @@ async def serialiseTweets(cleanedTweets, trainingModel):
 
 async def predict(tweets):
 	cleanedTweets = await cleanTweets(tweets)
-	democrat = 0
-	repub = 0
+	male = 0
+	female = 0
 	serialisedTweets = await serialiseTweets(cleanedTweets, dictionaryList)
 	for tweet in serialisedTweets:
-		probability = politics.predict_proba([tweet]);
-		democrat += probability[0][0]
-		repub += probability[0][1]
-	democrat = democrat / len(cleanedTweets)
-	repub = 1 - democrat
-	print(democrat, repub)
+		probability = politics.predict_proba([tweet])
+		female += probability[0][0]
+		male += probability[0][1]
+	male = male / len(cleanedTweets)
+	female = 1 - male
+	print(male, female) 
 
 rawTweets = sys.argv[1].split(';')
 loop = asyncio.get_event_loop()

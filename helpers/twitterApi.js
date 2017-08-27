@@ -27,8 +27,8 @@ var config = require('../config.js')
 //   console.log(body); //the bearer token...
 
 // });
-const MAX_TWEETS = 16;
-const MAX_FRIENDS = 2;
+const MAX_TWEETS = 40;
+const MAX_FRIENDS = 200;
 
 var consumerKey = process.env.twitterConsumerKey || config.twitterKey.consumerKey;
 var consumerSecret = process.env.twitterConsumerSecret || config.twitterKey.consumerSecret;
@@ -84,12 +84,12 @@ var parseTweets = function(screenName, tweets) {
 };
 
 // add the friens to the object return by parseTweets
-var parseFriends = function(tweets, friends) {
+var parseFriends = function(friends) {
   // {srceenName:'realDonaldTrump', friends:[]}
-  tweets.friends = friends.users.map(function(friend) {
-    return {screen_name: friend.screen_name, name: friend.name};
+  friendList = friends.users.map(function(friend) {
+    return friend.screen_name;
   });
-  return tweets;
+  return friendList;
 };
 
 //https://dev.twitter.com/rest/reference/get/statuses/user_timeline
@@ -105,7 +105,8 @@ var getTweets = function(screenName, callback) {
         console.log(screenName);
         reject(error);
       } else if (tweets.length === 0) {
-        reject('No tweets found. Unknown screen name.');
+        console.log(screenName);
+        reject('No tweets found. Unknown screen name.');  
       } else {
         resolve(parseTweets(screenName, tweets));
       }
@@ -116,14 +117,15 @@ var getTweets = function(screenName, callback) {
 
 //https://dev.twitter.com/rest/reference/get/friends/list
 // return an array of friend
-var getFriends = function(tweets, callback) {
+var getFriends = function(screen_name, callback) {
   var promiseGetFriends = new Promise(function(resolve, reject) {
-    var params = { screen_name: tweets.screen_name, count: MAX_FRIENDS}; //screen_name example 'realDonaldTrump'
+    var params = { screen_name: screen_name, count: MAX_FRIENDS}; //screen_name example 'realDonaldTrump'
     client.get('friends/list', params, function(error, friends, response) {
       if (error) {
+        console.log(error);
         reject(error);
       } else {
-        resolve(parseFriends(tweets, friends));
+        resolve(parseFriends(friends));
       }
     });
   });
