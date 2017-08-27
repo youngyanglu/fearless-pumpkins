@@ -4,11 +4,11 @@ const PythonShell = require('python-shell');
 const twitterApi = require('../helpers/twitterApi.js');
 const async = require('async');
 
-module.exports.genderPredictor = (Handle) => {
+const genderPredictor = (Handle, callback) => {
 	twitterApi.getTweets(Handle)
 	.then((parsedTweets) => {
 		var tweets = '';
-		async.each(parsedTweets.tweets, function(tweet, callback) {
+		async.each(parsedTweets.tweets, (tweet, callback) => {
 			tweets += tweet + ';'
 		})
 		return tweets;
@@ -19,14 +19,15 @@ module.exports.genderPredictor = (Handle) => {
 		  pythonPath: 'python3',
 		  args: [tweets]
 		};
-		PythonShell.run('/tweetPredictor.py', options, function (err, results) {
+		PythonShell.run('../machineLearner/tweetPredictor.py', options, (err, results) => {
 		  if (err) throw err;
-		  console.log('results: %j', results);
+		  results = results[0].split(' '); //[male, female]
+		  callback(parseInt(Number(results[0])* 100));
 		});
-	})
-}
+	});
+};
 
-module.exports.politicalPredictor = (Handle) => {
+const politicalPredictor = (Handle, callback) => {
 	twitterApi.getFriends(Handle)
 	.then((parsedFriends) => {
 		return parsedFriends.join(';')
@@ -37,11 +38,18 @@ module.exports.politicalPredictor = (Handle) => {
 			pythonPath: 'python3',
 			args: [friends]
 		};
-		PythonShell.run('./friendPredictor.py', options, function(err, results) {
+		PythonShell.run('../machineLearner/friendPredictor.py', options, (err, results) => {
 			if (err) throw err;
-			console.log('results: %j', results);
+			results = results[0].split(' '); //[demo, repub]
+		 	callback(100 - parseInt(parseFloat(results[2])* 100));
 		});
-	})
-}
+	});
+};
 
-module.exports.politicalPredictor('TheEllenShow')
+module.exports = (Handle, callback) => {
+	genderPredictor(Handle, (male) => {
+		politicalPredictor(Handle, (repub) => {
+			callback({male, repub});
+		});
+	});
+}

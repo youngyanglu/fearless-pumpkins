@@ -2,6 +2,7 @@ var express = require('express');
 var request = require('request');
 var bodyParser = require('body-parser');
 var twitterApi = require('../helpers/twitterApi.js');
+var predictionEngine = require('../machineLearner/predictionEngine.js');
 // var googleApi = require('../helpers/googleAPI.js');
 var db = require('../db/db.js');
 // var engine = require('../helpers/tweetricsEngine.js');
@@ -25,13 +26,36 @@ app.post('/name', (req, res) => {
     return parsedTweets;
   })
   .then((response) => {
-    response.infographicState = {};
-    response.infographicState.dem = {percent: 20};
-    response.infographicState.rep = {percent: 80};
-    return response;
-  })
-  .then((response) => {
-    res.status(200).send(response);
+    db.findHandle(req.body.screenName, (err, handle) => {
+      if (!handle) {
+        predictionEngine(req.body.screenName, (results) => {
+          db.addHandle(req.body.screenName, results.repub, results.male, () => {
+            response.infographicState = {};
+            response.infographicState.dem = {percent: 100 - results.repub};
+            response.infographicState.rep = {percent: results.repub};
+            response.infographicState.male = {percent: results.male};
+            response.infographicState.female = {percent: 100 - results.male};
+            console.log(response, '*****response inside if');
+            res.status(200).send(response);
+          });
+        });
+      } else {
+        rep = handle.ProbabilityPoliticsRepub;
+        male = handle.ProbabilityGenderMale;
+        db.findAllHandles((err, results) => {
+          console.log(results);
+        })
+        console.log(req.body.screenName)
+        db.increaseCount(req.body.screenName, () => {
+          response.infographicState = {};
+          response.infographicState.dem = {percent: 100 - rep};
+          response.infographicState.rep = {percent: rep};
+          response.infographicState.male = {percent: male};
+          response.infographicState.female = {percent: 100 - male};
+          res.status(200).send(response);
+        });
+      }
+    });
   });
 });
 

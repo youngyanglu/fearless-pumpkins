@@ -15,40 +15,17 @@ import sys
 
 pool =  Pool()
 
-friendsModel = joblib.load('politicsPrediction.pkl')
+friendsModel = joblib.load('../machineLearner/politicsPrediction.pkl')
 eachFriendWord = []
 friendDictionary = {}
 eachFriendSer = []
 friendCategorisation = []
 
-f = open('politicsFriends.txt', 'r')
+f = open('../machineLearner/politicsFriends.txt', 'r')
 dictionaryString = f.read()
 dictionaryList = dictionaryString.split(' ')
 
-
-# async def friendCleaner(friendList):
-#     for friendString in collection.distinct('Text', {'Classification': 0, 'Category': 'Politics'}):
-#         friendCategorisation.append(0)
-#         friendList = friendString.split(',');
-#         eachFriendWord.append(friendList)
-#         for friend in friendList:
-#             try:
-#                 friendDictionary[friend] = friendDictionary[friend] + 1 
-#             except KeyError:
-#                 friendDictionary[friend] = 1
-#     for friendString in collection.distinct('Text', {'Classification': 1, 'Category': 'Politics'}):
-#         friendCategorisation.append(1)
-#         friendList = friendString.split(',');
-#         eachFriendWord.append(friendList)
-#         for friend in friendList:
-#             try:
-#                 friendDictionary[friend] = friendDictionary[friend] + 1 
-#             except KeyError:
-#                 friendDictionary[friend] = 1
-#     return eachFriendWord
-
-
-async def serialiseTweets(friendsArray, trainingModel):
+async def serialiseFriends(friendsArray, trainingModel):
     serialisedFriends = []
     for word in trainingModel:
         if word in friendsArray:
@@ -60,7 +37,7 @@ async def serialiseTweets(friendsArray, trainingModel):
 async def predict(friendsArray):
     male = 0
     female = 0
-    serialisedFriends = await serialiseTweets(friendsArray, dictionaryList)
+    serialisedFriends = await serialiseFriends(friendsArray, dictionaryList)
     probability = friendsModel.predict_proba([serialisedFriends])
     print(probability)
 

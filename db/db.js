@@ -23,9 +23,9 @@ var trainingSchema = new mongoose.Schema({
 
 var cacheSchema = new mongoose.Schema({
 	Handle: String,
-	Classification: Number,
-	Probability: Number,
-	Count: {type: Number, default: 0}
+	ProbabilityPoliticsRepub: Number,
+  ProbabilityGenderMale: Number,
+	Count: {type: Number, default: 1}
 });
 
 var Training = mongoose.model('training', trainingSchema);
@@ -48,7 +48,11 @@ module.exports.addTweet = (Text, Category, Classification, Handle, callback) => 
 };
 
 module.exports.findHandle = (Handle, callback) => {
-	Cache.find({Handle}, (err, handle) => {
+  console.log(Handle);
+	Cache.findOne({Handle}, (err, handle) => {
+    if (handle !== null) {
+      console.log('found a handle');
+    }
 		callback(err, handle);
 	});
 };
@@ -59,25 +63,28 @@ module.exports.findAllHandles = (callback) => {
   });
 };
 
-module.exports.addHandle = (Handle, Classification, callback) => {
+module.exports.addHandle = (Handle, Repub, Male, callback) => {
 	Cache.create({Handle}, (err, handle) => {
 		if (err) {
 			throw err;
 		} else {
-			handle.Classification = Classification;
-			handle.Probability = Probability;
+			handle.ProbabilityPoliticsRepub = Repub;
+      handle.ProbabilityGenderMale = Male;
 			handle.save((err, updatedHandle) => {
-				callback(updatedHandle);
+				console.log('created a cache document');
+        callback(updatedHandle);
 			});
 		}
 	});
 };
 
 module.exports.increaseCount = (Handle, callback) => {
-	Cache.find({Handle}, (err, handle) => {
+	Cache.findOne({Handle}, (err, handle) => {
+    console.log(handle);
 		handle.count++;
 		handle.save((err, updatedHandle) => {
-			callback(updatedHandle);
+      console.log(updatedHandle);
+      callback()
 		});
 	});
 };

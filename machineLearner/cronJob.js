@@ -17,5 +17,8 @@ var options = {
 	// 	});
 	// );
 // }, null, true, 'America/Los_Angeles');
-twitterFetcher.democratFriendsUpdate()
-.then(twitterFetcher.republicanFriendsUpdate)
+
+
+
+// twitterFetcher.democratFriendsUpdate()
+// .then(twitterFetcher.republicanFriendsUpdate)

@@ -36,7 +36,7 @@ friendCategorisation = []
 
 # You need to get the ids as well as the text so you can update afterwards.
 # You can use collection.find({}, {text: 1})
-# It gives all the ids and text.
+# It gives all the ids and textself.
 
 async def friendCleaner():
     for friendString in collection.distinct('Text', {'Classification': 0, 'Category': 'Politics'}):
@@ -125,57 +125,57 @@ async def serialize(list, dictionary, container):
 
 # # tweet analysis
 
-# async def tweetEngine():
-#     eachTweetWord = await tweetCleaner()
-#     dictionaryList = []
-#     for key, value in tweetDictionary.items():
-#         if value > 2 and len(key) > 2:
-#             dictionaryList.append(key)
-#     f = open('genderDictionary.txt','w')
-#     f.write(' '.join(dictionaryList))
-#     f.close()
-#     Xarray = await serialize(eachTweetWord, dictionaryList, eachTweetSer)
-
-# loop = asyncio.get_event_loop()
-# loop.run_until_complete(tweetEngine())
-# loop.close()
-
-# parameters = {'alpha':[1e-4, 1e-5, 1e-6]}
-# X = np.array(eachTweetSer)
-# y = np.array(tweetCategorisation)
-# NNgender = MLPClassifier(solver='lbfgs', hidden_layer_sizes=(20,20,20), random_state=1)
-# # SVMgender = svm.SVC(probability=True)
-# genderOp = GridSearchCV(NNgender, parameters)
-# genderOp.fit(X, y)
-
-# joblib.dump(genderOp, 'genderPrediction.pkl') 
-
-# friend analysis 
-
-async def friendEngine():
-    eachFriendWord = await friendCleaner()
-    friendList = []
-    for key, value in friendDictionary.items():
-        if value > 1:
-            friendList.append(key)
-    f = open('politicsFriends.txt', 'w')
-    f.write(' '.join(friendList))
+async def tweetEngine():
+    eachTweetWord = await tweetCleaner()
+    dictionaryList = []
+    for key, value in tweetDictionary.items():
+        if value > 2 and len(key) > 2:
+            dictionaryList.append(key)
+    f = open('genderDictionary.txt','w')
+    f.write(' '.join(dictionaryList))
     f.close()
-    Xarray = await serialize(eachFriendWord, friendList, eachFriendSer)
+    Xarray = await serialize(eachTweetWord, dictionaryList, eachTweetSer)
 
 loop = asyncio.get_event_loop()
-loop.run_until_complete(friendEngine())
+loop.run_until_complete(tweetEngine())
 loop.close()
 
 parameters = {'alpha':[1e-4, 1e-5, 1e-6]}
-X = np.array(eachFriendSer)
-y = np.array(friendCategorisation)
-NNpolitics = MLPClassifier(solver='lbfgs', random_state=1)
-# SVMpolitics = svm.SVC(probability=True)
-politicsOp = GridSearchCV(NNpolitics, parameters)
-politicsOp.fit(X, y)
+X = np.array(eachTweetSer)
+y = np.array(tweetCategorisation)
+NNgender = MLPClassifier(solver='lbfgs', hidden_layer_sizes=(20,20,20), random_state=1)
+# SVMgender = svm.SVC(probability=True)
+genderOp = GridSearchCV(NNgender, parameters)
+genderOp.fit(X, y)
 
-joblib.dump(politicsOp, 'politicsPrediction.pkl') 
+joblib.dump(genderOp, 'genderPrediction.pkl') 
+
+# friend analysis 
+
+# async def friendEngine():
+#     eachFriendWord = await friendCleaner()
+#     friendList = []
+#     for key, value in friendDictionary.items():
+#         if value > 1:
+#             friendList.append(key)
+#     f = open('politicsFriends.txt', 'w')
+#     f.write(' '.join(friendList))
+#     f.close()
+#     Xarray = await serialize(eachFriendWord, friendList, eachFriendSer)
+
+# loop = asyncio.get_event_loop()
+# loop.run_until_complete(friendEngine())
+# loop.close()
+
+# parameters = {'alpha':[1e-4, 1e-5, 1e-6]}
+# X = np.array(eachFriendSer)
+# y = np.array(friendCategorisation)
+# NNpolitics = MLPClassifier(solver='lbfgs', random_state=1)
+# # SVMpolitics = svm.SVC(probability=True)
+# politicsOp = GridSearchCV(NNpolitics, parameters)
+# politicsOp.fit(X, y)
+
+# joblib.dump(politicsOp, 'politicsPrediction.pkl') 
 
 
 
