@@ -27,7 +27,7 @@ app.post('/name', (req, res) => {
   .then((response) => {
     response.infographicState = {};
     response.infographicState.dem = {percent: 20};
-    response.infographicState.rep = {percent:80};
+    response.infographicState.rep = {percent: 80};
     return response;
   })
   .then((response) => {
