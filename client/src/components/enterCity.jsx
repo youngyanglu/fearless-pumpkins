@@ -15,13 +15,7 @@ const Landing = (props) => {
           <p>ENTER A USERNAME</p>
           <input className={styles.input_username} type="text" name="username" onChange={props.onInputChange} placeholder="e.g. realDonaldTrump"></input><br />
           <button className={styles.input_button} type="submit" onClick={props.handleClick}>SUBMIT</button>
-          <p className={styles.input_separator}>- - OR - -</p>
-          <p>ENTER A CITY</p>
-          <input className={styles.input_username} type="text" name="city" onChange={props.onCityChange} placeholder="e.g. New York"></input><br />
-          <button className={styles.input_button} type="submit" onClick={props.handleCityClick}>SUBMIT</button>
         </form>
-
-
       </div>
 
       <Feed feed={props.feed} topTen={props.topTen} handleFeedAboutClick={props.handleFeedAboutClick}/>

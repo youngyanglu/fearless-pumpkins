@@ -15,6 +15,7 @@ class App extends React.Component {
     super(props);
     this.state = {
       username: '',
+      city: '',
       stage: 'landing',
       analytics: {},
       feed: 'about',
@@ -43,6 +44,7 @@ class App extends React.Component {
       feed: 'about'
     });
   }
+
 
   // Updates app's state of username on every change upon user input
   onInputChange(event) {
@@ -106,6 +108,65 @@ class App extends React.Component {
     }
   }
 
+  // Sets the city state.
+  onCityChange(event) {
+    this.setState({
+      city: event.target.value
+    });
+  }
+
+  // Handles the click event on the handle click submit button
+  // When invoked, changes stage to loading until ajax request is successfully
+  // returned
+  handleCityClick(event) {
+    event.preventDefault();
+
+    // If input is invalid, alert user of invalid input
+    // and don't send an http request to the server
+    if (this.state.city === '' ||
+      this.state.city === undefined ||
+      this.state.city === null || typeof
+      this.state.city !== 'string' ||
+      this.state.city.includes('<')) {
+      alert('Your input is invalid');
+    } else {
+      // Set stage to loading once button is clicked
+      this.setState({
+        stage: 'loading'
+      });
+    }
+    // variable to send to post request
+    var postObject = {
+      city: this.state.city
+    };
+    $.ajax({
+      type: 'POST',
+      url: '/city',
+      data: JSON.stringify(postObject),
+      contentType: 'application/json',
+      success: (data) => {
+        console.log('POST request: success');
+        console.log(data, 'data');
+        // Changes stage to analytics
+        // and sets received information to app state
+        this.setState({
+          analytics: data,
+          stage: 'analytics'
+        });
+      },
+      error: (err) => {
+        if (err.status >= 400) {
+          alert('Oops! Something went wrong...');
+        } else {
+          alert('Your input might be invalid');
+        }
+        // If error occurs, brink app back to initial state
+        this.backToLanding();
+        console.log('POST request: error', err);
+      }
+    });
+  }
+
   componentWillMount () {
     // update feed
     var topSearches = [];
@@ -148,7 +209,8 @@ class App extends React.Component {
     let element = '';
     let homeButton = '';
     if (this.state.stage === 'landing') {
-      element = <Landing handleClick={this.handleClick} onInputChange={this.onInputChange} handleFeedAboutClick={this.handleFeedAboutClick} feed={this.state.feed} topTen={this.state.topSearchedUsers}/>;
+      element = <Landing handleClick={this.handleClick} onInputChange={this.onInputChange} handleFeedAboutClick={this.handleFeedAboutClick} feed={this.state.feed} topTen={this.state.topSearchedUsers}
+                handleCityChange={this.onCityChange} handleCityClick={this.handleCityClick} />;
     }
 
     if (this.state.stage === 'loading') {
