@@ -208,8 +208,6 @@ class App extends React.Component {
     // Conditional rendering based on stage of the app
     let element = '';
     let homeButton = '';
-    let politicsButton = '';
-    let genderButton = '';
     if (this.state.stage === 'landing') {
       element = <Landing handleClick={this.handleClick} onInputChange={this.onInputChange} handleFeedAboutClick={this.handleFeedAboutClick} feed={this.state.feed} topTen={this.state.topSearchedUsers}
                 handleCityChange={this.onCityChange} handleCityClick={this.handleCityClick} />;
