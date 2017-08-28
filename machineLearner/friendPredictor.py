@@ -39,7 +39,7 @@ async def predict(friendsArray):
     female = 0
     serialisedFriends = await serialiseFriends(friendsArray, dictionaryList)
     probability = friendsModel.predict_proba([serialisedFriends])
-    print(probability)
+    print(probability[0][1])
 
 friendsArray = sys.argv[1].split(';')
 loop = asyncio.get_event_loop()

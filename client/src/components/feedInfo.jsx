@@ -31,7 +31,7 @@ class FeedInfo extends React.Component {
 
       body =
         <div className={styles.description}>
-          {this.state.topTen.map((user, id) => (<p key={id}>{user.screen_name}</p>))}
+          {this.state.topTen.map((user) => (<p>{user}</p>))}
         </div>;
     } else {
       heading =

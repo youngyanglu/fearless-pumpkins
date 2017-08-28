@@ -1,13 +1,13 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import $ from 'jquery';
+import async from 'async';
 
 import Landing from './components/landing.jsx';
 import Loading from './components/loading.jsx';
 import Analytics from './components/analytics.jsx';
 import AboutInfo from './components/aboutInfo.jsx';
 import FeedInfo from './components/feedInfo.jsx';
-
 import styles from '../styles/landing.css';
 
 class App extends React.Component {
@@ -176,25 +176,25 @@ class App extends React.Component {
       url: '/usersList',
       success: (data) => {
         console.log('GET request: success');
-
         // Find top 10 most popular searches (based on 'count' property)
-        data.forEach(user => {
+        async.each(data, (user, callback) => {
           if (topSearches.length < 10) {
-              topSearches.push(user);
+              topSearches.push(user.Handle);
           } else {
             if (user.count !== 0) {
               for (var i = 0; i < topSearches.length; i++) {
                 if (user.count > topSearches[i].count) {
-                  topSearches[i] = user;
+                  topSearches[i] = user.Handle;
                   break;
                 }
               }
             }
           }
-        });
-
-        this.setState({
-          topSearchedUsers: topSearches
+          callback()
+        }, () => {
+          this.setState({
+            topSearchedUsers: topSearches
+          }, () => { console.log(this.state.topSearchedUsers)});
         });
       },
       error: (err) => {

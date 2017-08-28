@@ -5,14 +5,13 @@ const AboutInfo = (props) => {
   return (
     <div className={styles.about}>
       <div className={styles.topic}>
-        <a>Let's talk <i>politics...</i></a>
+        <a> Let's talk <i> gender and politics...</i></a>
       </div>
       <div className={styles.description}>
         <ul>
-          <li>Input a Twitter username of a person on whom you'd like to gain some insight</li>
-          <li>The app will retrieve some information about that Twitter account such as tweets, friends, mentions and etc.</li>
-          <li>Perform analysis of friends and tweets</li>
-          <li>Based on results of analysis, the app will determine how Democrat or Republican the user is</li>
+          <li>Input a Twitter username</li>
+          <li>Our algorithm will analyse their friends and tweets</li>
+          <li>We'll let you know if they're Republican or Democratic, and try to predict their gender</li>
         </ul>
       </div>
 

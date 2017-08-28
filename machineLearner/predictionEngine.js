@@ -21,8 +21,7 @@ const genderPredictor = (Handle, callback) => {
 		};
 		PythonShell.run('../machineLearner/tweetPredictor.py', options, (err, results) => {
 		  if (err) throw err;
-		  results = results[0].split(' '); //[male, female]
-		  callback(parseInt(Number(results[0])* 100));
+		  callback(parseInt(Number(results)* 100));
 		});
 	});
 };
@@ -40,8 +39,7 @@ const politicalPredictor = (Handle, callback) => {
 		};
 		PythonShell.run('../machineLearner/friendPredictor.py', options, (err, results) => {
 			if (err) throw err;
-			results = results[0].split(' '); //[demo, repub]
-		 	callback(100 - parseInt(parseFloat(results[2])* 100));
+		 	callback(parseInt(parseFloat(results)* 100));
 		});
 	});
 };

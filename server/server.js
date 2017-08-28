@@ -35,7 +35,6 @@ app.post('/name', (req, res) => {
             response.infographicState.rep = {percent: results.repub};
             response.infographicState.male = {percent: results.male};
             response.infographicState.female = {percent: 100 - results.male};
-            console.log(response, '*****response inside if');
             res.status(200).send(response);
           });
         });
@@ -43,9 +42,7 @@ app.post('/name', (req, res) => {
         rep = handle.ProbabilityPoliticsRepub;
         male = handle.ProbabilityGenderMale;
         db.findAllHandles((err, results) => {
-          console.log(results);
         })
-        console.log(req.body.screenName)
         db.increaseCount(req.body.screenName, () => {
           response.infographicState = {};
           response.infographicState.dem = {percent: 100 - rep};

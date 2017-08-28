@@ -67,7 +67,7 @@ async def predict(tweets):
 		male += probability[0][1]
 	male = male / len(cleanedTweets)
 	female = 1 - male
-	print(male, female) 
+	print(male)
 
 rawTweets = sys.argv[1].split(';')
 loop = asyncio.get_event_loop()

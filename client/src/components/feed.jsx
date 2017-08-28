@@ -4,7 +4,7 @@ import AboutInfo from './aboutInfo.jsx';
 import FeedInfo from './feedInfo.jsx';
 
 const Feed = (props) => {
-
+  console.log(props.topTen)
   // If Feed tag is clicked, change the style of the About button
   // to default and update the style of the Feed button
   var handleFeedClick = function() {
